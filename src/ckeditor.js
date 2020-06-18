@@ -31,6 +31,9 @@ import Base64UploadAdapter from '@ckeditor/ckeditor5-upload/src/adapters/base64u
 
 export default class ClassicEditor extends ClassicEditorBase {}
 
+const IFRAME_SRC = '//cdn.iframe.ly/api/iframe';
+const API_KEY = '170945f3a79b4eb1b6e86d';
+
 ClassicEditor.builtinPlugins = [
 	Essentials,
 	UploadAdapter,
@@ -58,6 +61,9 @@ ClassicEditor.builtinPlugins = [
 ];
 
 ClassicEditor.defaultConfig = {
+	plugins: [
+		MediaEmbed
+	],
 	toolbar: {
 		items: [
 			'heading',
@@ -81,7 +87,9 @@ ClassicEditor.defaultConfig = {
 	},
 	image: {
 		toolbar: [
+			'imageStyle:alignLeft',
 			'imageStyle:full',
+			'imageStyle:alignRight',
 			'imageStyle:side',
 			'|',
 			'imageTextAlternative'
@@ -92,6 +100,28 @@ ClassicEditor.defaultConfig = {
 			'tableColumn',
 			'tableRow',
 			'mergeTableCells'
+		]
+	},
+	mediaEmbed: {
+		previewsInData: false,
+		providers: [
+			{
+				name: 'iframely previews',
+				url: /^(http|https|ftp):\/\/.*$/,
+				html: match => {
+					const url = match[ 0 ];
+					const iframeUrl = IFRAME_SRC + '?app=1&api_key=' + API_KEY + '&url=' + encodeURIComponent( url );
+					return (
+						'<div class="iframely-embed">' +
+						'<div class="iframely-responsive">' +
+						`<iframe src="${ iframeUrl }" ` +
+						'frameborder="0" allow="autoplay; encrypted-media" allowfullscreen>' +
+						'</iframe>' +
+						'</div>' +
+						'</div>'
+					);
+				}
+			}
 		]
 	},
 	language: 'en'
